@@ -244,6 +244,9 @@ vendor/lib/libssd.so
 vendor/lib/libQSEEComAPI.so
 vendor/lib/mediadrm/libwvdrmengine.so
 
+# Exfat
+bin/mount.exfat
+
 # Graphics
 vendor/lib/egl/eglsubAndroid.so
 vendor/lib/egl/libEGL_adreno.so
