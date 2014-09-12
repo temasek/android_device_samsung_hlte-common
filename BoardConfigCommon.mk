@@ -54,6 +54,9 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(LOCAL_PATH)/bluetooth
 BOARD_BLUETOOTH_USES_HCIATTACH_PROPERTY := false
 BOARD_HAVE_BLUETOOTH_BCM := true
 
+# CMHW
+BOARD_HARDWARE_CLASS += hardware/samsung/cmhw
+
 # Lights
 TARGET_PROVIDES_LIBLIGHT := true
 
@@ -87,6 +90,3 @@ WIFI_DRIVER_MODULE_AP_ARG   := "firmware_path=/system/etc/wifi/bcmdhd_apsta.bin 
 WIFI_DRIVER_FW_PATH_PARAM   := "/sys/module/dhd/parameters/firmware_path"
 WIFI_DRIVER_FW_PATH_STA     := "/system/etc/wifi/bcmdhd_sta.bin"
 WIFI_DRIVER_FW_PATH_AP      := "/system/etc/wifi/bcmdhd_apsta.bin"
-
-# Hardware
-BOARD_HARDWARE_CLASS := device/samsung/hlte-common/cmhw
