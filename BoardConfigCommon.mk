@@ -33,7 +33,6 @@ TARGET_KERNEL_CONFIG := msm8974_sec_defconfig
 TARGET_KERNEL_SELINUX_CONFIG := selinux_defconfig
 TARGET_KERNEL_VARIANT_CONFIG := msm8974_sec_hlte_eur_defconfig
 TARGET_KERNEL_SOURCE := kernel/samsung/hlte
-ARM_EABI_TOOLCHAIN := /temasek/toolchain/sm-arm-eabi-4.8/bin
 
 # External apps on SD
 TARGET_EXTERNAL_APPS = sdcard1
