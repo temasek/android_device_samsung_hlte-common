@@ -23,4 +23,7 @@
 
     <!-- Decode YV16 format on Samsung HDR hardware -->
     <bool name="needsSamsungHDRFormat">true</bool>
+
+    <!-- Allow HDR and ZSL together -->
+    <bool name="enableHDRWithZSL">true</bool>
 </resources>
