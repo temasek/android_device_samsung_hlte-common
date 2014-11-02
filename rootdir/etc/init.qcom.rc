@@ -759,23 +759,25 @@ service profiler_daemon /system/bin/profiler_daemon
     disabled
 
 # virtual sdcard daemon running as system (1000)
-service container /system/bin/sdcard /data/container /mnt/shell/container 1000 1000
+service container /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime,nodiratime,uid=1000,gid=1000,wgid=1015 /data/container /mnt/shell/container
     class late_start
     oneshot
 
     start container
 
 # virtual sdcard daemon running as media_rw (1023)
-service sdcard /system/bin/sdcard -u 1023 -g 1023 -l /data/media /mnt/shell/emulated
+service sdcard /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime,nodiratime,uid=1023,gid=1023,wgid=1015,derive=legacy,reserved_mb=20 /data/media /mnt/shell/emulated
     class late_start
     oneshot
 
-service fuse_sdcard1 /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/sdcard1 /storage/sdcard1
+service fuse_sdcard1 /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime,nodiratime,uid=1023,gid=1023,wgid=1015,derive=unified,lower_fs=fat /mnt/media_rw/sdcard1 /storage/sdcard1
     class late_start
+    oneshot
     disabled
 
-service fuse_usbdisk /system/bin/sdcard -u 1023 -g 1023 /mnt/media_rw/usbdisk /storage/usbdisk
+service fuse_usbdisk /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime,nodiratime,uid=1023,gid=1023,wgid=1015,derive=unified,lower_fs=fat /mnt/media_rw/usbdisk /storage/usbdisk
     class late_start
+    oneshot
     disabled
 
 on property:ro.fuse_sdcard=true
