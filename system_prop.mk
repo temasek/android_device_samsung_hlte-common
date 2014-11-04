@@ -38,3 +38,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.adb.secure=0 \
     ro.secure=0
+
+# Recovery
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.cwm.forbid_format=/efs,/persist,/boot,/firmware,/firmware-modem \
+    ro.cwm.forbid_mount=/efs,/persist,/boot,/firmware,/firmware-modem
