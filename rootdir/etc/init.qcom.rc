@@ -857,3 +857,10 @@ service fastmmisrv /system/bin/sh /init.qcom.factory.sh
 
 on ffbm
     start fastmmisrv
+
+# Boot Audio - Default Silent
+service bootsnd /system/bin/tinyplay /system/etc/sound/silence.wav -D 0 -d 0 -p 880
+    class late_start
+    user root
+    group audio
+    oneshot
