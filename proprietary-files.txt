@@ -287,10 +287,6 @@ vendor/lib/libOmxQcelp13Dec.so
 vendor/lib/libOmxWmaDec.so
 vendor/lib/libSHIMDivxDrm.so
 
-# NFC
-vendor/firmware/bcm2079xB4_firmware.ncd
-vendor/firmware/bcm2079xB4_pre_firmware.ncd
-
 # Perf
 vendor/lib/libqc-opt.so
 
