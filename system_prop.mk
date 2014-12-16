@@ -37,7 +37,3 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0
     wifi.supplicant_scan_interval=15
-
-# LAZY DEXOPT
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.sys.lazy.dexopt=true
