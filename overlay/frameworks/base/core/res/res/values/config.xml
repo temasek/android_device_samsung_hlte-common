@@ -290,7 +290,7 @@
     <!-- <bool name="config_enableTorch">true</bool> -->
 
     <!-- Boolean to enable stylus gestures -->
-   <!-- <bool name="config_stylusGestures">true</bool> --> 
+    <bool name="config_stylusGestures">true</bool>
 
     <!-- Performance profiles -->
     <string name="config_perf_profile_prop">sys.perf.profile</string>
