@@ -1,2 +1,4 @@
 allow rild proc_net:file { write };
+allow rild sysfs_sec:dir search;
 allow rild sysfs_sec:file { getattr open read write };
+allow rild sysfs_sec:lnk_file read;
