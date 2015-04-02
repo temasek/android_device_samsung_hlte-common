@@ -73,6 +73,9 @@ TARGET_PROVIDES_LIBLIGHT := true
 # NFC
 BOARD_NFC_HAL_SUFFIX := msm8974
 
+# Use HW crypto for ODE
+TARGET_HW_DISK_ENCRYPTION := true
+
 # Power HAL not specified, we're using the one in hlte-common instead.
 
 # Recovery
