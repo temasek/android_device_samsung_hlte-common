@@ -21,10 +21,46 @@
 #define LOG_TAG "PowerHAL_H_Ext"
 #include <utils/Log.h>
 
+#define NODE_MAX 64
+
+#define GO_HISPEED_LOAD_PATH "/sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load"
+#define OFF_HIGHSPEED_LOAD 110
+
+static int go_hispeed_load = 0;
+static int off_hispeed_load = OFF_HIGHSPEED_LOAD;
+
 #define TOUCHKEY_POWER "/sys/class/input/input2/enabled"
 #define SPEN_POWER "/sys/class/input/input3/enabled"
 #define TSP_POWER "/sys/class/input/input4/enabled"
 #define GPIO_KEYS_POWER "/sys/class/input/input18/enabled"
+
+static int sysfs_read(char *path, char *s, int num_bytes)
+{
+    char buf[80];
+    int count;
+    int ret = 0;
+    int fd = open(path, O_RDONLY);
+
+    if (fd < 0) {
+        strerror_r(errno, buf, sizeof(buf));
+        ALOGE("Error opening %s: %s\n", path, buf);
+
+        return -1;
+    }
+
+    if ((count = read(fd, s, num_bytes - 1)) < 0) {
+        strerror_r(errno, buf, sizeof(buf));
+        ALOGE("Error reading %s: %s\n", path, buf);
+
+        ret = -1;
+    } else {
+        s[count] = '\0';
+    }
+
+    close(fd);
+
+    return ret;
+}
 
 static void sysfs_write(char *path, char *s) {
     char buf[80];
@@ -52,6 +88,19 @@ void cm_power_set_interactive_ext(int on) {
     sysfs_write(TOUCHKEY_POWER, on ? "1" : "0");
     sysfs_write(SPEN_POWER, on ? "1" : "0");
     sysfs_write(GPIO_KEYS_POWER, on ? "1" : "0");
+
+    char tmp_str[NODE_MAX];
+    int tmp;
+
+    if (sysfs_read(GO_HISPEED_LOAD_PATH, tmp_str, NODE_MAX - 1)) {
+        return;
+    }
+
+    tmp = atoi(tmp_str);
+    if (!go_hispeed_load || (go_hispeed_load != tmp && off_hispeed_load != tmp)) {
+        go_hispeed_load = tmp;
+    }
+
+    snprintf(tmp_str, NODE_MAX, "%d", on ? go_hispeed_load : off_hispeed_load);
+    sysfs_write(GO_HISPEED_LOAD_PATH, tmp_str);
 }
-
-
