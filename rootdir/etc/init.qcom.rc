@@ -37,7 +37,6 @@ on init
     # Set permissions for persist partition
     mkdir /persist 0771 system system
     mkdir /mnt/shell/emulated 0700 shell shell
-    mkdir /mnt/shell/container 0700 system system
     mkdir /storage 0550 system sdcard_r
     mkdir /storage/emulated 0555 root root
 
@@ -59,7 +58,6 @@ on init
     symlink /storage/emulated/legacy /mnt/sdcard
     symlink /storage/emulated/legacy /storage/sdcard0
     symlink /mnt/shell/emulated/0 /storage/emulated/legacy
-    symlink /mnt/shell/container /storage/container
     symlink /storage/sdcard1 /extSdCard
     symlink /storage/sdcard1 /mnt/extSdCard
     symlink /storage/sdcard1 /external_sd
@@ -172,10 +170,6 @@ on post-fs-data
     mkdir /data/media 0770 media_rw media_rw
     chown media_rw media_rw /data/media
 
-# we will remap this as /storage/container with the sdcard fuse tool
-    mkdir /data/container 0770 system system
-    chown system system /data/container
-    
     mkdir /data/misc/bluetooth 0770 bluetooth bluetooth
 
     # Create the directories used by the Wireless subsystem
@@ -648,11 +642,6 @@ on property:persist.data.ds_fmc_app.mode=1
 on property:ro.data.large_tcp_window_size=true
     # Adjust socket buffer to enlarge TCP receive window for high bandwidth (e.g. DO-RevB)
     write /proc/sys/net/ipv4/tcp_adv_win_scale  2
-
-# virtual sdcard daemon running as system (1000)
-service container /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime,nodiratime,uid=1000,gid=1000,wgid=1015 /data/container /mnt/shell/container
-    class late_start
-    oneshot
 
 # virtual sdcard daemon running as media_rw (1023)
 service sdcard /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime,nodiratime,uid=1023,gid=1023,wgid=1015,derive=legacy,reserved_mb=20 /data/media /mnt/shell/emulated
