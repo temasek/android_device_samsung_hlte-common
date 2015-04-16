@@ -648,12 +648,12 @@ service sdcard /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime
     class late_start
     oneshot
 
-service fuse_sdcard1 /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime,nodiratime,uid=1023,gid=1023,wgid=1015,derive=unified,lower_fs=fat /mnt/media_rw/sdcard1 /storage/sdcard1
+service fuse_sdcard1 /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime,nodiratime,uid=1023,gid=1023,wgid=1023,derive=unified,lower_fs=fat /mnt/media_rw/sdcard1 /storage/sdcard1
     class late_start
     oneshot
     disabled
 
-service fuse_usbdisk /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime,nodiratime,uid=1023,gid=1023,wgid=1015,derive=unified,lower_fs=fat /mnt/media_rw/usbdisk /storage/usbdisk
+service fuse_usbdisk /system/xbin/busybox mount -t sdcardfs -o rw,nosuid,nodev,noatime,nodiratime,uid=1023,gid=1023,wgid=1023,derive=unified,lower_fs=fat /mnt/media_rw/usbdisk /storage/usbdisk
     class late_start
     oneshot
     disabled
