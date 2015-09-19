@@ -308,6 +308,9 @@ vendor/lib/libdisp-aba.so
 -vendor/lib/libmm-abl.so
 vendor/lib/libmm-abl-oem.so
 
+# QuickBoot
+-app/QuickBoot/QuickBoot.apk
+
 # Sensors
 lib/hw/sensorhubs.msm8974.so
 lib/hw/sensors.msm8974.so

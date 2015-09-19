@@ -187,7 +187,8 @@ done
 # Pick up overlay for features that depend on non-open-source files
 
 PRODUCT_PACKAGES += \\
-    TimeService
+    TimeService \\
+    QuickBoot
 
 PRODUCT_PACKAGES += \\
     libHevcSwDecoder \\
@@ -238,6 +239,16 @@ ifneq (\$(filter hlte hltespr hltetmo hlteusc hltevzw,\$(TARGET_DEVICE)),)
 
 include \$(CLEAR_VARS)
 LOCAL_MODULE := TimeService
+LOCAL_MODULE_OWNER := $VENDOR
+LOCAL_SRC_FILES := proprietary/app/\$(LOCAL_MODULE)/\$(LOCAL_MODULE).apk
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_SUFFIX := \$(COMMON_ANDROID_PACKAGE_SUFFIX)
+LOCAL_MODULE_CLASS := APPS
+LOCAL_CERTIFICATE := platform
+include \$(BUILD_PREBUILT)
+
+include \$(CLEAR_VARS)
+LOCAL_MODULE := QuickBoot
 LOCAL_MODULE_OWNER := $VENDOR
 LOCAL_SRC_FILES := proprietary/app/\$(LOCAL_MODULE)/\$(LOCAL_MODULE).apk
 LOCAL_MODULE_TAGS := optional
