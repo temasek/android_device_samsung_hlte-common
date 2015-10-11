@@ -76,7 +76,9 @@ BOARD_NFC_HAL_SUFFIX := msm8974
 # Use HW crypto for ODE
 TARGET_HW_DISK_ENCRYPTION := true
 
-# Power HAL not specified, we're using the one in hlte-common instead.
+# Power HAL
+TARGET_POWERHAL_VARIANT := qcom
+TARGET_POWERHAL_SET_INTERACTIVE_EXT := $(LOCAL_PATH)/power/power_ext.c
 
 # Recovery
 BOARD_HAS_LARGE_FILESYSTEM := true
