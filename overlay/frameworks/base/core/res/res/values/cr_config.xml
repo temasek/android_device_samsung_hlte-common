@@ -21,7 +21,7 @@
      for different hardware and product builds. -->
 <resources>
 
-    <!-- Hardware keys enable/disable -->
-    <bool name="config_hwKeysPref">true</bool>
+    <!-- Hardware keys enable/disable 
+    <bool name="config_hwKeysPref">true</bool> -->
 
 </resources>
