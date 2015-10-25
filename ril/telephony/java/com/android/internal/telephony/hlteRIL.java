@@ -59,7 +59,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
 
     public hlteRIL(Context context, int networkMode,
             int cdmaSubscription) {
-        super(context, networkMode, cdmaSubscription);
+        super(context, networkMode, cdmaSubscription, null);
         mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
         mQANElements = SystemProperties.getInt("ro.ril.telephony.mqanelements", 4);
     }
