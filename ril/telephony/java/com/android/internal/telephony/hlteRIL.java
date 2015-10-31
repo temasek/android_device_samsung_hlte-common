@@ -50,16 +50,15 @@ public class hlteRIL extends RIL implements CommandsInterface {
     private boolean isGSM = false;
     private boolean newril = needsOldRilFeature("newril"); //4.4.4 verson of Samsung RIL
 
-    public hlteRIL(Context context, int preferredNetworkType,
-            int cdmaSubscription, Integer instanceId) {
-        super(context, preferredNetworkType, cdmaSubscription, instanceId);
+    public hlteRIL(Context context, int networkModes, int cdmaSubscription) {
+        this(context, networkModes, cdmaSubscription, null);
         mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
         mQANElements = SystemProperties.getInt("ro.ril.telephony.mqanelements", 4);
     }
 
-    public hlteRIL(Context context, int networkMode,
-            int cdmaSubscription) {
-        super(context, networkMode, cdmaSubscription, null);
+    public hlteRIL(Context context, int preferredNetworkType,
+            int cdmaSubscription, Integer instanceId) {
+        super(context, preferredNetworkType, cdmaSubscription, instanceId);
         mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
         mQANElements = SystemProperties.getInt("ro.ril.telephony.mqanelements", 4);
     }
