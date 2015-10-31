@@ -48,6 +48,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
 
     private AudioManager mAudioManager;
     private boolean isGSM = false;
+    private static final int RIL_REQUEST_DIAL_EMERGENCY = 10001;
     private boolean newril = needsOldRilFeature("newril"); //4.4.4 verson of Samsung RIL
 
     public hlteRIL(Context context, int networkModes, int cdmaSubscription) {
@@ -401,8 +402,6 @@ public class hlteRIL extends RIL implements CommandsInterface {
 
         send(rr);
     }
-
-    static final int RIL_REQUEST_DIAL_EMERGENCY = 10016;
 
     private void
     dialEmergencyCall(String address, int clirMode, Message result) {
