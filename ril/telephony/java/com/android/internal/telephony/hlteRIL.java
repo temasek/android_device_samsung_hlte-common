@@ -166,7 +166,6 @@ public class hlteRIL extends RIL implements CommandsInterface {
     protected Object
     responseCallList(Parcel p) {
         int num;
-        int voiceSettings;
         ArrayList<DriverCall> response;
         DriverCall dc;
 
@@ -182,25 +181,25 @@ public class hlteRIL extends RIL implements CommandsInterface {
             dc = new DriverCall();
 
             dc.state = DriverCall.stateFromCLCC(p.readInt());
-            dc.index = p.readInt() & 0xff;
+            dc.index = p.readInt();
             dc.TOA = p.readInt();
             dc.isMpty = (0 != p.readInt());
             dc.isMT = (0 != p.readInt());
             dc.als = p.readInt();
-            voiceSettings = p.readInt();
-            dc.isVoice = (0 == voiceSettings) ? false : true;
+            dc.isVoice = (0 != p.readInt());
             p.readInt(); // is video
             p.readInt(); // samsung call detail
             p.readInt(); // samsung call detail
             p.readString(); // samsung call detail
             dc.isVoicePrivacy = (0 != p.readInt());
             dc.number = p.readString();
-            int np = p.readInt();
-            dc.numberPresentation = DriverCall.presentationFromCLIP(np);
+            dc.numberPresentation = DriverCall.presentationFromCLIP(p.readInt());
             dc.name = p.readString();
-            dc.namePresentation = p.readInt();
-            int uusInfoPresent = p.readInt();
-            if (uusInfoPresent == 1) {
+            if (isGSM)
+                dc.namePresentation = DriverCall.presentationFromCLIP(p.readInt());
+            else
+                dc.namePresentation = p.readInt();
+            if (p.readInt() == 1) { // uusInfoPresent
                 dc.uusInfo = new UUSInfo();
                 dc.uusInfo.setType(p.readInt());
                 dc.uusInfo.setDcs(p.readInt());
@@ -361,6 +360,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
         }
         return rr;
     }
+
     private Object
     responseDataRegistrationState(Parcel p) {
         String response[] = (String[])responseStrings(p); // all data from parcell get popped
