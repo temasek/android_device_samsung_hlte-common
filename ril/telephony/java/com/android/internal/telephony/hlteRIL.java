@@ -291,19 +291,6 @@ public class hlteRIL extends RIL implements CommandsInterface {
     }
 
     @Override
-    public void
-    acceptCall (Message result) {
-        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ANSWER, result);
-
-        rr.mParcel.writeInt(1);
-        rr.mParcel.writeInt(0);
-
-        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
-
-        send(rr);
-    }
-
-    @Override
     protected RILRequest
     processSolicited (Parcel p) {
         int serial, error;
