@@ -49,6 +49,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
     private AudioManager mAudioManager;
     private boolean isGSM = false;
     private static final int RIL_REQUEST_DIAL_EMERGENCY = 10001;
+    private boolean newril = needsOldRilFeature("newril"); //4.4.4 verson of Samsung RIL
 
     public hlteRIL(Context context, int networkModes, int cdmaSubscription) {
         this(context, networkModes, cdmaSubscription, null);
@@ -436,7 +437,23 @@ public class hlteRIL extends RIL implements CommandsInterface {
 
         send(rr);
     }
-   
+
+    @Override
+    public void
+    acceptCall (Message result) {
+        if(!newril){
+            super.acceptCall(result);
+            return;
+        }
+        RILRequest rr
+        = RILRequest.obtain(RIL_REQUEST_ANSWER, result);
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+        rr.mParcel.writeInt(1);
+        rr.mParcel.writeInt(0);
+        send(rr);
+    }
+
+    
     // Workaround for Samsung CDMA "ring of death" bug:
     //
     // Symptom: As soon as the phone receives notice of an incoming call, an
