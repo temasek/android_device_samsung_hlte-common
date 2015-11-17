@@ -62,4 +62,5 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Radio
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.ril.telephony.mqanelements=6 \
-    ro.telephony.ril_class=hlteRIL
+    ro.telephony.ril_class=hlteRIL \
+    persist.data.qmi.adb_logmask=0
