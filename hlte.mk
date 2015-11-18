@@ -116,9 +116,9 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/libnfc-brcm-20791b04.conf:system/etc/libnfc-brcm-20791b04.conf \
     $(LOCAL_PATH)/configs/libnfc-brcm.conf:system/etc/libnfc-brcm.conf
 
-# Radio
+# Samsung symbols
 PRODUCT_PACKAGES += \
-    libril_shim
+    libsamsung_symbols
 
 # Ramdisk
 PRODUCT_PACKAGES += \
