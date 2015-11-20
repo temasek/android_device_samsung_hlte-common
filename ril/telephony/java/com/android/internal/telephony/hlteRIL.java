@@ -104,7 +104,6 @@ public class hlteRIL extends RIL implements CommandsInterface {
             p.readInt(); // - perso_unblock_retries
             cardStatus.mApplications[i] = appStatus;
         }
-        // for sprint gsm(lte) only sim
         if (numApplications==1 && !isGSM && appStatus.app_type == appStatus.AppTypeFromRILInt(2)) {
             cardStatus.mApplications = new IccCardApplicationStatus[numApplications+2];
             cardStatus.mGsmUmtsSubscriptionAppIndex = 0;
@@ -134,7 +133,6 @@ public class hlteRIL extends RIL implements CommandsInterface {
         }
         return cardStatus;
     }
-
 
     @Override
     protected Object responseSignalStrength(Parcel p) {
@@ -187,10 +185,6 @@ public class hlteRIL extends RIL implements CommandsInterface {
             dc.isMT = (0 != p.readInt());
             dc.als = p.readInt();
             dc.isVoice = (0 != p.readInt());
-            p.readInt(); // is video
-            p.readInt(); // samsung call detail
-            p.readInt(); // samsung call detail
-            p.readString(); // samsung call detail
             dc.isVoicePrivacy = (0 != p.readInt());
             dc.number = p.readString();
             dc.numberPresentation = DriverCall.presentationFromCLIP(p.readInt());
@@ -241,7 +235,6 @@ public class hlteRIL extends RIL implements CommandsInterface {
         }
 
         return response;
-
     }
 
     @Override
@@ -252,6 +245,15 @@ public class hlteRIL extends RIL implements CommandsInterface {
         int response = p.readInt();
 
         switch(response) {
+            case RIL_UNSOL_RIL_CONNECTED:
+                ret = responseInts(p);
+                setRadioPower(false, null);
+                setPreferredNetworkType(mPreferredNetworkType, null);
+                setCdmaSubscriptionSource(mCdmaSubscription, null);
+                if(mRilVersion >= 8)
+                    setCellInfoListRate(Integer.MAX_VALUE, null);
+                notifyRegistrantsRilConnectionChanged(((int[])ret)[0]);
+                break;
             // SAMSUNG STATES
             case 11010: // RIL_UNSOL_AM:
                 ret = responseString(p);
@@ -291,6 +293,23 @@ public class hlteRIL extends RIL implements CommandsInterface {
     }
 
     @Override
+    public void
+    acceptCall (Message result) {
+        if(!newril){
+            super.acceptCall(result);
+            return;
+        }
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_ANSWER, result);
+
+        rr.mParcel.writeInt(1);
+        rr.mParcel.writeInt(0);
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        send(rr);
+    }
+
+    @Override
     protected RILRequest
     processSolicited (Parcel p) {
         int serial, error;
@@ -306,7 +325,9 @@ public class hlteRIL extends RIL implements CommandsInterface {
                 if (error == 0 || p.dataAvail() > 0) {
                     try {switch (tr.mRequest) {
                             /* Get those we're interested in */
+                        case RIL_REQUEST_VOICE_REGISTRATION_STATE:
                         case RIL_REQUEST_DATA_REGISTRATION_STATE:
+                        case RIL_REQUEST_OPERATOR:
                             rr = tr;
                             break;
                     }} catch (Throwable thr) {
@@ -333,7 +354,9 @@ public class hlteRIL extends RIL implements CommandsInterface {
         Object ret = null;
         if (error == 0 || p.dataAvail() > 0) {
             switch (rr.mRequest) {
-                case RIL_REQUEST_DATA_REGISTRATION_STATE: ret = responseDataRegistrationState(p); break;
+                case RIL_REQUEST_VOICE_REGISTRATION_STATE: ret = responseVoiceDataRegistrationState(p, false); break;
+                case RIL_REQUEST_DATA_REGISTRATION_STATE: ret = responseVoiceDataRegistrationState(p, true); break;
+                case RIL_REQUEST_OPERATOR: ret =  operatorCheck(p); break;
                 default:
                     throw new RuntimeException("Unrecognized solicited response: " + rr.mRequest);
             }
@@ -349,17 +372,42 @@ public class hlteRIL extends RIL implements CommandsInterface {
     }
 
     private Object
-    responseDataRegistrationState(Parcel p) {
-        String response[] = (String[])responseStrings(p); // all data from parcell get popped
-        /* DANGER WILL ROBINSON
-         * In some cases from Vodaphone we are receiving a RAT of 102
-         * while in tunnels of the metro. Lets Assume that if we
-         * receive 102 we actually want a RAT of 2 for EDGE service */
-        if (response.length > 4 &&
-            response[0].equals("1") &&
-            response[3].equals("102")) {
-            response[3] = "2";
+    operatorCheck(Parcel p) {
+        String response[] = (String[])responseStrings(p);
+        for(int i=0; i<2; i++){
+            if (response[i]!= null){
+                response[i] = Operators.operatorReplace(response[i]);
+            }
         }
+        return response;
+    }
+
+    private Object
+    responseVoiceDataRegistrationState(Parcel p, boolean data) {
+        String response[] = (String[])responseStrings(p);
+        if (isGSM){
+            if (data &&
+                response.length > 4 &&
+                response[0].equals("1") &&
+                response[3].equals("102")) {
+                response[3] = "2";
+            }
+            return response;
+        }
+        if (response.length>=10){
+            for(int i=6; i<=9; i++){
+                if (response[i]== null){
+                    response[i]=Integer.toString(Integer.MAX_VALUE);
+                } else {
+                    try {
+                        Integer.parseInt(response[i]);
+                    } catch(NumberFormatException e) {
+                        response[i]=Integer.toString(Integer.parseInt(response[i],16));
+                    }
+                }
+            }
+        }
+
         return response;
     }
     
@@ -377,70 +425,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
             mAudioManager.setParameters("wide_voice_enable=false");
         }
     }
-
-    @Override
-    public void
-    dial(String address, int clirMode, UUSInfo uusInfo, Message result) {
-        if (PhoneNumberUtils.isEmergencyNumber(address)) {
-            dialEmergencyCall(address, clirMode, result);
-            return;
-        }
-        RILRequest rr = RILRequest.obtain(RIL_REQUEST_DIAL, result);
-
-        rr.mParcel.writeString(address);
-        rr.mParcel.writeInt(clirMode);
-        rr.mParcel.writeInt(0);
-        rr.mParcel.writeInt(1);
-        rr.mParcel.writeString("");
-
-        if (uusInfo == null) {
-            rr.mParcel.writeInt(0); // UUS information is absent
-        } else {
-            rr.mParcel.writeInt(1); // UUS information is present
-            rr.mParcel.writeInt(uusInfo.getType());
-            rr.mParcel.writeInt(uusInfo.getDcs());
-            rr.mParcel.writeByteArray(uusInfo.getUserData());
-        }
-
-        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
-
-        send(rr);
-    }
-
-    private void
-    dialEmergencyCall(String address, int clirMode, Message result) {
-        RILRequest rr;
-        Rlog.v(RILJ_LOG_TAG, "Emergency dial: " + address);
-
-        rr = RILRequest.obtain(RIL_REQUEST_DIAL_EMERGENCY, result);
-        rr.mParcel.writeString(address + "/");
-        rr.mParcel.writeInt(clirMode);
-        rr.mParcel.writeInt(0);        // CallDetails.call_type
-        rr.mParcel.writeInt(3);        // CallDetails.call_domain
-        rr.mParcel.writeString("");    // CallDetails.getCsvFromExtra
-        rr.mParcel.writeInt(0);        // Unknown
-
-        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
-
-        send(rr);
-    }
-
-    @Override
-    public void
-    acceptCall (Message result) {
-        if(!newril){
-            super.acceptCall(result);
-            return;
-        }
-        RILRequest rr
-        = RILRequest.obtain(RIL_REQUEST_ANSWER, result);
-        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
-        rr.mParcel.writeInt(1);
-        rr.mParcel.writeInt(0);
-        send(rr);
-    }
-
-    
+  
     // Workaround for Samsung CDMA "ring of death" bug:
     //
     // Symptom: As soon as the phone receives notice of an incoming call, an
@@ -496,5 +481,111 @@ public class hlteRIL extends RIL implements CommandsInterface {
         }
 
         super.notifyRegistrantsCdmaInfoRec(infoRec);
+    }
+
+    @Override
+    public void
+    dial(String address, int clirMode, UUSInfo uusInfo, Message result) {
+        if (PhoneNumberUtils.isEmergencyNumber(address)) {
+            dialEmergencyCall(address, clirMode, result);
+            return;
+        }
+        RILRequest rr = RILRequest.obtain(RIL_REQUEST_DIAL, result);
+
+        rr.mParcel.writeString(address);
+        rr.mParcel.writeInt(clirMode);
+        rr.mParcel.writeInt(0);
+        rr.mParcel.writeInt(1);
+        rr.mParcel.writeString("");
+
+        if (uusInfo == null) {
+            rr.mParcel.writeInt(0); // UUS information is absent
+        } else {
+            rr.mParcel.writeInt(1); // UUS information is present
+            rr.mParcel.writeInt(uusInfo.getType());
+            rr.mParcel.writeInt(uusInfo.getDcs());
+            rr.mParcel.writeByteArray(uusInfo.getUserData());
+        }
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        send(rr);
+    }
+
+    //this method is used in the search network functionality.
+    // in mobile network setting-> network operators
+    @Override
+    protected Object
+    responseOperatorInfos(Parcel p) {
+        String strings[] = (String [])responseStrings(p);
+        ArrayList<OperatorInfo> ret;
+
+        if (strings.length % mQANElements != 0) {
+            throw new RuntimeException(
+                                       "RIL_REQUEST_QUERY_AVAILABLE_NETWORKS: invalid response. Got "
+                                       + strings.length + " strings, expected multiple of " + mQANElements);
+        }
+
+        ret = new ArrayList<OperatorInfo>(strings.length / mQANElements);
+        Operators init = null;
+        if (strings.length != 0) {
+            init = new Operators();
+        }
+        for (int i = 0 ; i < strings.length ; i += mQANElements) {
+            String temp = init.unOptimizedOperatorReplace(strings[i+0]);
+            ret.add (
+                     new OperatorInfo(
+                                      temp, //operatorAlphaLong
+                                      temp,//operatorAlphaShort
+                                      strings[i+2],//operatorNumeric
+                                      strings[i+3]));//state
+        }
+
+        return ret;
+    }
+
+    @Override
+    public void getImsRegistrationState(Message result) {
+        if(mRilVersion >= 8)
+            super.getImsRegistrationState(result);
+        else {
+            if (result != null) {
+                CommandException ex = new CommandException(
+                    CommandException.Error.REQUEST_NOT_SUPPORTED);
+                AsyncResult.forMessage(result, null, ex);
+                result.sendToTarget();
+            }
+        }
+    }
+
+    private void
+    dialEmergencyCall(String address, int clirMode, Message result) {
+        RILRequest rr;
+        Rlog.v(RILJ_LOG_TAG, "Emergency dial: " + address);
+
+        rr = RILRequest.obtain(RIL_REQUEST_DIAL_EMERGENCY, result);
+        rr.mParcel.writeString(address + "/");
+        rr.mParcel.writeInt(clirMode);
+        rr.mParcel.writeInt(0);        // CallDetails.call_type
+        rr.mParcel.writeInt(3);        // CallDetails.call_domain
+        rr.mParcel.writeString("");    // CallDetails.getCsvFromExtra
+        rr.mParcel.writeInt(0);        // Unknown
+
+        if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+
+        send(rr);
+    }
+
+    // This call causes ril to crash the socket, stopping further communication
+    @Override
+    public void
+    getHardwareConfig (Message result) {
+        riljLog("Ignoring call to 'getHardwareConfig'");
+        if (result != null) {
+            CommandException ex = new CommandException(
+                CommandException.Error.REQUEST_NOT_SUPPORTED);
+            AsyncResult.forMessage(result, null, ex);
+            result.sendToTarget();
+        }
     }
 }
