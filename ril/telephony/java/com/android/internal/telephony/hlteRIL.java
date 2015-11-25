@@ -21,22 +21,31 @@ import static com.android.internal.telephony.RILConstants.*;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.AsyncResult;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Parcel;
+import android.telephony.SmsMessage;
 import android.os.SystemProperties;
+import android.os.SystemClock;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.telephony.Rlog;
 
 import android.telephony.SignalStrength;
+
 import android.telephony.PhoneNumberUtils;
+import com.android.internal.telephony.RILConstants;
+import com.android.internal.telephony.gsm.SmsBroadcastConfigInfo;
+import com.android.internal.telephony.cdma.CdmaInformationRecords;
+import com.android.internal.telephony.cdma.CdmaInformationRecords.CdmaSignalInfoRec;
+import com.android.internal.telephony.cdma.SignalToneUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.android.internal.telephony.gsm.SmsBroadcastConfigInfo;
-import com.android.internal.telephony.cdma.CdmaInformationRecords;
-import com.android.internal.telephony.cdma.CdmaInformationRecords.CdmaSignalInfoRec;
-import com.android.internal.telephony.cdma.SignalToneUtil;
 import com.android.internal.telephony.uicc.IccCardApplicationStatus;
 import com.android.internal.telephony.uicc.IccCardStatus;
 
@@ -47,9 +56,12 @@ import com.android.internal.telephony.uicc.IccCardStatus;
 public class hlteRIL extends RIL implements CommandsInterface {
 
     private AudioManager mAudioManager;
-    private boolean isGSM = false;
+
+    private Object mSMSLock = new Object();
+    private boolean mIsSendingSMS = false;
+    protected boolean isGSM = false;
     private static final int RIL_REQUEST_DIAL_EMERGENCY = 10001;
-    private boolean newril = needsOldRilFeature("newril"); //4.4.4 verson of Samsung RIL
+    public static final long SEND_SMS_TIMEOUT_IN_MS = 30000;
 
     public hlteRIL(Context context, int networkModes, int cdmaSubscription) {
         this(context, networkModes, cdmaSubscription, null);
@@ -132,6 +144,44 @@ public class hlteRIL extends RIL implements CommandsInterface {
             cardStatus.mApplications[cardStatus.mImsSubscriptionAppIndex] = appStatus3;
         }
         return cardStatus;
+    }
+
+    @Override
+    public void
+    sendCdmaSms(byte[] pdu, Message result) {
+        smsLock();
+        super.sendCdmaSms(pdu, result);
+    }
+
+    @Override
+    public void
+        sendSMS (String smscPDU, String pdu, Message result) {
+        smsLock();
+        super.sendSMS(smscPDU, pdu, result);
+    }
+
+    private void smsLock(){
+        // Do not send a new SMS until the response for the previous SMS has been received
+        //   * for the error case where the response never comes back, time out after
+        //     30 seconds and just try the next SEND_SMS
+        synchronized (mSMSLock) {
+            long timeoutTime  = SystemClock.elapsedRealtime() + SEND_SMS_TIMEOUT_IN_MS;
+            long waitTimeLeft = SEND_SMS_TIMEOUT_IN_MS;
+            while (mIsSendingSMS && (waitTimeLeft > 0)) {
+                Rlog.d(RILJ_LOG_TAG, "sendSMS() waiting for response of previous SEND_SMS");
+                try {
+                    mSMSLock.wait(waitTimeLeft);
+                } catch (InterruptedException ex) {
+                    // ignore the interrupt and rewait for the remainder
+                }
+                waitTimeLeft = timeoutTime - SystemClock.elapsedRealtime();
+            }
+            if (waitTimeLeft <= 0) {
+                Rlog.e(RILJ_LOG_TAG, "sendSms() timed out waiting for response of previous CDMA_SEND_SMS");
+            }
+            mIsSendingSMS = true;
+        }
+
     }
 
     @Override
@@ -295,10 +345,6 @@ public class hlteRIL extends RIL implements CommandsInterface {
     @Override
     public void
     acceptCall (Message result) {
-        if(!newril){
-            super.acceptCall(result);
-            return;
-        }
         RILRequest rr = RILRequest.obtain(RIL_REQUEST_ANSWER, result);
 
         rr.mParcel.writeInt(1);
@@ -410,7 +456,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
 
         return response;
     }
-    
+
     /**
      * Set audio parameter "wb_amr" for HD-Voice (Wideband AMR).
      *
@@ -425,7 +471,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
             mAudioManager.setParameters("wide_voice_enable=false");
         }
     }
-  
+
     // Workaround for Samsung CDMA "ring of death" bug:
     //
     // Symptom: As soon as the phone receives notice of an incoming call, an
@@ -481,6 +527,20 @@ public class hlteRIL extends RIL implements CommandsInterface {
         }
 
         super.notifyRegistrantsCdmaInfoRec(infoRec);
+    }
+
+
+
+    @Override
+    protected Object
+    responseSMS(Parcel p) {
+        // Notify that sendSMS() can send the next SMS
+        synchronized (mSMSLock) {
+            mIsSendingSMS = false;
+            mSMSLock.notify();
+        }
+
+        return super.responseSMS(p);
     }
 
     @Override
@@ -558,7 +618,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
         }
     }
 
-    private void
+   private void
     dialEmergencyCall(String address, int clirMode, Message result) {
         RILRequest rr;
         Rlog.v(RILJ_LOG_TAG, "Emergency dial: " + address);
@@ -566,10 +626,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
         rr = RILRequest.obtain(RIL_REQUEST_DIAL_EMERGENCY, result);
         rr.mParcel.writeString(address + "/");
         rr.mParcel.writeInt(clirMode);
-        rr.mParcel.writeInt(0);        // CallDetails.call_type
-        rr.mParcel.writeInt(3);        // CallDetails.call_domain
-        rr.mParcel.writeString("");    // CallDetails.getCsvFromExtra
-        rr.mParcel.writeInt(0);        // Unknown
+        rr.mParcel.writeInt(0);  // UUS information is absent
 
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
 
