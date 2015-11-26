@@ -34,7 +34,6 @@ import android.text.TextUtils;
 import android.telephony.Rlog;
 
 import android.telephony.SignalStrength;
-
 import android.telephony.PhoneNumberUtils;
 import com.android.internal.telephony.RILConstants;
 import com.android.internal.telephony.gsm.SmsBroadcastConfigInfo;
@@ -60,6 +59,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
     private Object mSMSLock = new Object();
     private boolean mIsSendingSMS = false;
     protected boolean isGSM = false;
+
     private static final int RIL_REQUEST_DIAL_EMERGENCY = 10001;
     public static final long SEND_SMS_TIMEOUT_IN_MS = 30000;
 
@@ -214,6 +214,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
     protected Object
     responseCallList(Parcel p) {
         int num;
+        int voiceSettings;
         ArrayList<DriverCall> response;
         DriverCall dc;
 
@@ -229,21 +230,26 @@ public class hlteRIL extends RIL implements CommandsInterface {
             dc = new DriverCall();
 
             dc.state = DriverCall.stateFromCLCC(p.readInt());
-            dc.index = p.readInt();
+            dc.index = p.readInt() & 0xff;
             dc.TOA = p.readInt();
             dc.isMpty = (0 != p.readInt());
             dc.isMT = (0 != p.readInt());
             dc.als = p.readInt();
-            dc.isVoice = (0 != p.readInt());
+            voiceSettings = p.readInt();
+            dc.isVoice = (0 == voiceSettings) ? false : true;
             dc.isVoicePrivacy = (0 != p.readInt());
+            if (isGSM) {
+                p.readInt();
+                p.readInt();
+                p.readString();
+            }
             dc.number = p.readString();
-            dc.numberPresentation = DriverCall.presentationFromCLIP(p.readInt());
+            int np = p.readInt();
+            dc.numberPresentation = DriverCall.presentationFromCLIP(np);
             dc.name = p.readString();
-            if (isGSM)
-                dc.namePresentation = DriverCall.presentationFromCLIP(p.readInt());
-            else
                 dc.namePresentation = p.readInt();
-            if (p.readInt() == 1) { // uusInfoPresent
+            int uusInfoPresent = p.readInt();
+            if (uusInfoPresent == 1) {
                 dc.uusInfo = new UUSInfo();
                 dc.uusInfo.setType(p.readInt());
                 dc.uusInfo.setDcs(p.readInt());
@@ -529,8 +535,6 @@ public class hlteRIL extends RIL implements CommandsInterface {
         super.notifyRegistrantsCdmaInfoRec(infoRec);
     }
 
-
-
     @Override
     protected Object
     responseSMS(Parcel p) {
@@ -618,7 +622,7 @@ public class hlteRIL extends RIL implements CommandsInterface {
         }
     }
 
-   private void
+    private void
     dialEmergencyCall(String address, int clirMode, Message result) {
         RILRequest rr;
         Rlog.v(RILJ_LOG_TAG, "Emergency dial: " + address);
@@ -626,7 +630,10 @@ public class hlteRIL extends RIL implements CommandsInterface {
         rr = RILRequest.obtain(RIL_REQUEST_DIAL_EMERGENCY, result);
         rr.mParcel.writeString(address + "/");
         rr.mParcel.writeInt(clirMode);
-        rr.mParcel.writeInt(0);  // UUS information is absent
+        rr.mParcel.writeInt(0);        // CallDetails.call_type
+        rr.mParcel.writeInt(3);        // CallDetails.call_domain
+        rr.mParcel.writeString("");    // CallDetails.getCsvFromExtra
+        rr.mParcel.writeInt(0);        // Unknown
 
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
 
