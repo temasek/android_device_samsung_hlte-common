@@ -120,6 +120,10 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/libnfc-brcm-20791b04.conf:system/etc/libnfc-brcm-20791b04.conf \
     $(LOCAL_PATH)/configs/libnfc-brcm.conf:system/etc/libnfc-brcm.conf
 
+# Kryten2k35 OTAUpdates
+PRODUCT_PACKAGES += \
+    OTAUpdates
+
 # Radio
 PRODUCT_PACKAGES += \
     libril_shim
