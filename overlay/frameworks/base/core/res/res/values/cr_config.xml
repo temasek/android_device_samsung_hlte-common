@@ -24,4 +24,8 @@
     <!-- Hardware keys enable/disable -->
     <bool name="config_hwKeysPref">true</bool>
 
+    <!-- Indicate whether closing the lid causes the lockscreen to appear.
+         The default is false. -->
+    <bool name="config_lidControlsScreenLock">true</bool>
+
 </resources>
