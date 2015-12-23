@@ -131,6 +131,13 @@
 /sys/devices/virtual/input/input*                   poll           0660    input    system
 /sys/devices/virtual/input/input*                   pollrate_ms    0660    input    system
 
+# NFC
+/dev/bcm2079x             0600   nfc         nfc
+/dev/pn547                0660   nfc         nfc
+
+# Vibrator
+/dev/tspdrv               0660   root        shell
+
 # wlan
 /dev/wcnss_wlan           0660   system     system
 /dev/wcnss_ctrl           0660   system     system
@@ -167,6 +174,7 @@ v/ppp                  0660   radio      vpn
 /sys/devices/f9924000.i2c/i2c-2/2-0020/input/input*   enabled     0660  system  system
 
 # sensorhub
+/dev/batch_io             0660   system     system
 /dev/ssp_sensorhub        0660   system     system
 /dev/iio:device*          0660   system system
 /sys/devices/f9967000.spi/spi_master/spi32766/spi32766.0/iio:device*   buffer/enable 0660     system    system

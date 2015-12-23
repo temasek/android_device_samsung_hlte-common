@@ -402,8 +402,6 @@ on boot
     chown system radio /sys/class/sensors/ssp_sensor/step_det_poll_delay
     chown system radio /sys/class/sensors/ssp_sensor/uncal_mag_poll_delay
     chown system radio /sys/class/sensors/ssp_sensor/uncalib_gyro_poll_delay
-    chmod 0600 /dev/batch_io
-    chown system system /dev/batch_io
 
     # IIO devices for SensorHub
     chmod 0600 /dev/iio:device0
@@ -511,18 +509,16 @@ on boot
     write /sys/class/sec/sec_key/wakeup_keys 116,172
 
     # Vibetonz
-    chmod 0660 /dev/tspdrv
-    chown root shell /dev/tspdrv
-	chown system system /sys/class/timed_output/vibrator/pwm_value
-	chmod 0660 /sys/class/timed_output/vibrator/pwm_value
+    chown system system /sys/class/timed_output/vibrator/pwm_value
+    chmod 0660 /sys/class/timed_output/vibrator/pwm_value
     chown system system /sys/class/timed_output/vibrator/pwm_max
-	chmod 0660 /sys/class/timed_output/vibrator/pwm_max
-	chown system system /sys/class/timed_output/vibrator/pwm_min
-	chmod 0660 /sys/class/timed_output/vibrator/pwm_min
-	chown system system /sys/class/timed_output/vibrator/pwm_default
-	chmod 0660 /sys/class/timed_output/vibrator/pwm_default
-	chown system system /sys/class/timed_output/vibrator/pwm_threshold
-	chmod 0660 /sys/class/timed_output/vibrator/pwm_threshold
+    chmod 0660 /sys/class/timed_output/vibrator/pwm_max
+    chown system system /sys/class/timed_output/vibrator/pwm_min
+    chmod 0660 /sys/class/timed_output/vibrator/pwm_min
+    chown system system /sys/class/timed_output/vibrator/pwm_default
+    chmod 0660 /sys/class/timed_output/vibrator/pwm_default
+    chown system system /sys/class/timed_output/vibrator/pwm_threshold
+    chmod 0660 /sys/class/timed_output/vibrator/pwm_threshold
     
     # Panel color temperature
     chmod 0660 /sys/class/lcd/panel/panel_colors
