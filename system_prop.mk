@@ -1,3 +1,6 @@
+# Art
+dalvik.vm.dex2oat-swap=false
+
 # Audio
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.audio.fluence.speaker=true \
