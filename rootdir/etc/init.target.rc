@@ -369,6 +369,7 @@ on boot
     chown system radio /sys/class/sensors/temphumidity_sensor/engine_ver2
     chown system radio /sys/class/sensors/temphumidity_sensor/cp_thm
     chown system radio /sys/class/sensors/temphumidity_sensor/send_accuracy
+    chown system radio /sys/class/sensors/temphumidity_sensor/batt_temperature
 # Grip_sensor
     chown system radio /sys/class/sensors/grip_sensor/reset
     chown system radio /sys/class/sensors/grip_sensor/vendor
@@ -380,22 +381,27 @@ on boot
     chown system radio /sys/class/sensors/grip_sensor/onoff
     chown system radio /sys/class/sensors/grip_sensor/erase_cal
 # SensorHub
+    chown system radio /sys/class/sensors/ssp_sensor/accel_poll_delay
     chown system radio /sys/class/sensors/ssp_sensor/enable
+    chown system radio /sys/class/sensors/ssp_sensor/game_rot_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/gyro_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/mag_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/mcu_dump
     chown system radio /sys/class/sensors/ssp_sensor/mcu_rev
     chown system radio /sys/class/sensors/ssp_sensor/mcu_name
     chown system radio /sys/class/sensors/ssp_sensor/mcu_test
     chown system radio /sys/class/sensors/ssp_sensor/mcu_reset
     chown system radio /sys/class/sensors/ssp_sensor/mcu_update
+    chown system radio /sys/class/sensors/ssp_sensor/mcu_update2
+    chown system radio /sys/class/sensors/ssp_sensor/mcu_update_ums
     chown system radio /sys/class/sensors/ssp_sensor/mcu_sleep_test
     chown system radio /sys/class/sensors/ssp_sensor/ori_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/mag_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/temp_humi_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/accel_poll_delay
     chown system radio /sys/class/sensors/ssp_sensor/rot_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/game_rot_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/step_det_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/gyro_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/temp_humi_poll_delay
     chown system radio /sys/class/sensors/ssp_sensor/ssp_flush
+    chown system radio /sys/class/sensors/ssp_sensor/step_det_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/uncal_mag_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/uncalib_gyro_poll_delay
     chmod 0600 /dev/batch_io
     chown system system /dev/batch_io
 
