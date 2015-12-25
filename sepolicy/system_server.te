@@ -6,4 +6,4 @@ allow system_server sysfs_sec:lnk_file read;
 allow system_server sysfs_thermal:dir search;
 allow system_server sysfs_thermal:file rw_file_perms;
 allow system_server efs_file:dir search;
-allow system_server sensors_efs_file:file r_file_perms;
+allow system_server sensors_efs_file:file { read open };
