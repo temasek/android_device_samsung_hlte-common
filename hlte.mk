@@ -56,11 +56,21 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/audio/mixer_paths.xml:system/etc/mixer_paths.xml \
     $(LOCAL_PATH)/audio/silence.wav:system/etc/sound/silence.wav
 
+# GPS
+PRODUCT_PACKAGES += \
+    gps.msm8974
+
 # camera
 PRODUCT_PACKAGES += \
     camera.msm8974 \
     libstlport \
     libxml2
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/gps/etc/gps.conf:/system/etc/gps.conf \
+    $(LOCAL_PATH)/gps/etc/flp.conf:/system/etc/flp.conf \
+    $(LOCAL_PATH)/gps/etc/sap.conf:/system/etc/sap.conf \
+    $(LOCAL_PATH)/gps/etc/izat.conf:/system/etc/izat.conf
 
 # Input device
 PRODUCT_COPY_FILES += \
