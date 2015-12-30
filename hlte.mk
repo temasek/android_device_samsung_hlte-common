@@ -124,7 +124,8 @@ PRODUCT_PACKAGES += \
 
 # Radio
 PRODUCT_PACKAGES += \
-    libril_shim
+    libril_shim \
+    librmt_shim
 
 # Ramdisk
 PRODUCT_PACKAGES += \
