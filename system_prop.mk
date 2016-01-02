@@ -49,8 +49,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.radio.add_power_save=1 \
     persist.radio.lte_vrat_report=1 \
     persist.radio.mode_pref_nv10=1 \
-    ro.telephony.mms_data_profile=5 \
-    persist.data.qmi.adb_logmask=0
+    ro.telephony.mms_data_profile=5
 
 # Sensors
 PRODUCT_PROPERTY_OVERRIDES += \
