@@ -60,6 +60,10 @@ PRODUCT_PACKAGES += \
     com.dsi.ant.antradio_library \
     libantradio
 
+# Doze
+PRODUCT_PACKAGES += \
+    SamsungDoze
+
 # GPS
 PRODUCT_PACKAGES += \
     gps.msm8974
