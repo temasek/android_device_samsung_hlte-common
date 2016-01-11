@@ -56,6 +56,10 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/audio/mixer_paths.xml:system/etc/mixer_paths.xml \
     $(LOCAL_PATH)/audio/silence.wav:system/etc/sound/silence.wav
 
+# Busybox
+PRODUCT_PACKAGES += \
+    busybox
+
 # Doze
 PRODUCT_PACKAGES += \
     SamsungDoze
