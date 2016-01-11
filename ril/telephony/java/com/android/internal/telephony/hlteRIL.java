@@ -299,13 +299,15 @@ public class hlteRIL extends RIL implements CommandsInterface {
 
         switch(response) {
             case RIL_UNSOL_RIL_CONNECTED:
-                ret = responseInts(p);
-                setRadioPower(false, null);
-                setPreferredNetworkType(mPreferredNetworkType, null);
-                setCdmaSubscriptionSource(mCdmaSubscription, null);
-                if(mRilVersion >= 8)
-                    setCellInfoListRate(Integer.MAX_VALUE, null);
-                notifyRegistrantsRilConnectionChanged(((int[])ret)[0]);
+                if (!setPreferredNetworkTypeSeen) {
+                    ret = responseInts(p);
+                    setRadioPower(false, null);
+                    setPreferredNetworkType(mPreferredNetworkType, null);
+                    setCdmaSubscriptionSource(mCdmaSubscription, null);
+                    if(mRilVersion >= 8)
+                        setCellInfoListRate(Integer.MAX_VALUE, null);
+                    notifyRegistrantsRilConnectionChanged(((int[])ret)[0]);
+                }
                 break;
             // SAMSUNG STATES
             case 11010: // RIL_UNSOL_AM:
