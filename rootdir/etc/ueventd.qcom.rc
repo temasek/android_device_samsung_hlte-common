@@ -176,6 +176,7 @@ v/ppp                  0660   radio      vpn
 /sys/devices/f9924000.i2c/i2c-2/2-0020/input/input*   enabled     0660  system  system
 
 # sensorhub
+/dev/batch_io             0660   system     system
 /dev/ssp_sensorhub        0660   system     system
 /dev/iio:device*          0660   system system
 /sys/devices/f9967000.spi/spi_master/spi32766/spi32766.0/iio:device*   buffer/enable 0660     system    system
