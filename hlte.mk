@@ -63,11 +63,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     SamsungDoze
 
-# Data
-PRODUCT_PACKAGES += \
-    librmnetctl \
-    rmnetcli
-
 # GPS
 PRODUCT_PACKAGES += \
     gps.msm8974
