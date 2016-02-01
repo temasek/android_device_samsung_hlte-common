@@ -88,11 +88,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     consumerir.msm8974
 
-# IPv6 tethering
-PRODUCT_PACKAGES += \
-    ebtables \
-    ethertypes
-
 # Keylayouts
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/keylayout/Button_Jack.kl:system/usr/keylayout/Button_Jack.kl \
