@@ -65,6 +65,8 @@ BOARD_RIL_CLASS := ../../../device/samsung/hlte-common/ril
 
 # Graphics
 TARGET_HAVE_NEW_GRALLOC := true
+BOARD_USE_HEVC_HWIP := true
+BOARD_USE_HEVCDEC_SUPPORT := true
 
 # Lights
 TARGET_PROVIDES_LIBLIGHT := true
