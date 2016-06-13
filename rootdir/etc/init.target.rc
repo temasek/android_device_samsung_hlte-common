@@ -61,7 +61,7 @@ on fs
     mount vfat /dev/block/platform/msm_sdcc.1/by-name/apnhlos /firmware ro shortname=lower,uid=1000,gid=1000,dmask=222,fmask=333,context=u:object_r:firmware_file:s0
 		# 444 file mode, 555 dirmode
     wait /dev/block/platform/msm_sdcc.1/by-name/modem
-    mount vfat /dev/block/platform/msm_sdcc.1/by-name/modem /firmware-modem ro shortname=lower,uid=1000,gid=1000,dmask=222,fmask=333,context=u:object_r:firmware_file:s0
+    mount vfat /dev/block/platform/msm_sdcc.1/by-name/modem /firmware-modem ro shortname=lower,uid=1000,gid=1000,dmask=227,fmask=337,context=u:object_r:firmware_file:s0
      write /sys/kernel/boot_adsp/boot 1
      setprop qcom.audio.init complete
 
@@ -104,6 +104,12 @@ on post-fs-data
     chmod 0644 /efs/redata.bin
     chown radio radio /efs/h2k.dat
     chmod 0644 /efs/h2k.dat
+
+    # proximity and gyro sensor permission
+    chmod 0644 /efs/prox_cal
+    chown system system /efs/prox_cal
+    chmod 0644 /efs/gyro_cal_data
+    chown system system /efs/gyro_cal_data
 
 # DRK permission
     mkdir /efs/prov 0770 radio system
@@ -369,7 +375,6 @@ on boot
     chown system radio /sys/class/sensors/temphumidity_sensor/engine_ver2
     chown system radio /sys/class/sensors/temphumidity_sensor/cp_thm
     chown system radio /sys/class/sensors/temphumidity_sensor/send_accuracy
-    chown system radio /sys/class/sensors/temphumidity_sensor/batt_temperature
 # Grip_sensor
     chown system radio /sys/class/sensors/grip_sensor/reset
     chown system radio /sys/class/sensors/grip_sensor/vendor
@@ -381,27 +386,24 @@ on boot
     chown system radio /sys/class/sensors/grip_sensor/onoff
     chown system radio /sys/class/sensors/grip_sensor/erase_cal
 # SensorHub
-    chown system radio /sys/class/sensors/ssp_sensor/accel_poll_delay
     chown system radio /sys/class/sensors/ssp_sensor/enable
-    chown system radio /sys/class/sensors/ssp_sensor/game_rot_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/gyro_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/mag_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/mcu_dump
     chown system radio /sys/class/sensors/ssp_sensor/mcu_rev
     chown system radio /sys/class/sensors/ssp_sensor/mcu_name
     chown system radio /sys/class/sensors/ssp_sensor/mcu_test
     chown system radio /sys/class/sensors/ssp_sensor/mcu_reset
     chown system radio /sys/class/sensors/ssp_sensor/mcu_update
-    chown system radio /sys/class/sensors/ssp_sensor/mcu_update2
-    chown system radio /sys/class/sensors/ssp_sensor/mcu_update_ums
     chown system radio /sys/class/sensors/ssp_sensor/mcu_sleep_test
     chown system radio /sys/class/sensors/ssp_sensor/ori_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/rot_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/mag_poll_delay
     chown system radio /sys/class/sensors/ssp_sensor/temp_humi_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/ssp_flush
+    chown system radio /sys/class/sensors/ssp_sensor/accel_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/rot_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/game_rot_poll_delay
     chown system radio /sys/class/sensors/ssp_sensor/step_det_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/uncal_mag_poll_delay
-    chown system radio /sys/class/sensors/ssp_sensor/uncalib_gyro_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/gyro_poll_delay
+    chown system radio /sys/class/sensors/ssp_sensor/ssp_flush
+    chmod 0600 /dev/batch_io
+    chown system system /dev/batch_io
 
     # IIO devices for SensorHub
     chmod 0600 /dev/iio:device0
@@ -465,7 +467,6 @@ on boot
     chown nfc nfc /data/nfc
     chown nfc nfc /data/nfc/param
 
-
 # IR_LED
     chown system radio /sys/class/sec/sec_ir/ir_send
     chown system radio /sys/class/sec/sec_ir/ir_send_result
@@ -509,6 +510,8 @@ on boot
     write /sys/class/sec/sec_key/wakeup_keys 116,172
 
     # Vibetonz
+    chmod 0660 /dev/tspdrv
+    chown root shell /dev/tspdrv
     chown system system /sys/class/timed_output/vibrator/pwm_value
     chmod 0660 /sys/class/timed_output/vibrator/pwm_value
     chown system system /sys/class/timed_output/vibrator/pwm_max
@@ -536,7 +539,7 @@ service qcamerasvr /system/bin/mm-qcamera-daemon
     group camera system inet input graphics radio sdcard_rw sdcard_r media_rw shell log
 
 service qseecomd /system/bin/qseecomd
-   class core
+   class late_start
    user root
    group system
 
@@ -551,7 +554,7 @@ service thermal-engine /system/bin/thermal-engine
    group radio system
 
 service time_daemon /system/bin/time_daemon
-   class main
+   class late_start
    user root
    group root
 
