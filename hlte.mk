@@ -63,16 +63,21 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     SamsungDoze
 
-# GPS
-PRODUCT_PACKAGES += \
-    gps.msm8974
-
 # camera
 PRODUCT_PACKAGES += \
     camera.msm8974 \
     libstlport \
     libxml2 \
     Snap
+
+# Offline charging images
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/res/images/charger/battery_fail.png:/res/images/charger/battery_fail.png \
+    $(LOCAL_PATH)/res/images/charger/battery_scale.png:/res/images/charger/battery_scale.png
+
+# GPS
+PRODUCT_PACKAGES += \
+    gps.msm8974
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/gps/etc/gps.conf:/system/etc/gps.conf \
