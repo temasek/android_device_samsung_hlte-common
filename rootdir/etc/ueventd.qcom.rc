@@ -56,6 +56,10 @@
 /dev/smdcntl5             0640   radio      radio
 /dev/smdcntl6             0640   radio      radio
 /dev/smdcntl7             0640   radio      radio
+/dev/smdcntl8             0640   radio      radio
+/dev/smdcntl9             0640   radio      radio
+/dev/smdcntl10            0640   radio      radio
+/dev/smdcntl11            0640   radio      radio
 /dev/smdcnt_rev0          0640   radio      radio
 /dev/smdcnt_rev1          0640   radio      radio
 /dev/smdcnt_rev2          0640   radio      radio
@@ -154,14 +158,9 @@
 /dev/url                  0660   secnetfilter    secnetfilter
 /dev/vfsspi               0660   system     system
 
-# DVB devices
-/dev/dvb/adapter0/demux*  0440   media       media
-/dev/dvb/adapter0/dvr*    0660   media       media
-/dev/dvb/adapter0/video*  0660   media       media
-
-# Broadcast devices
-/dev/tsc_mux0             0660   media       media
-/dev/tsc_ci0              0660   media       media
+# CDMA radio interface MUX
+/dev/ts0710mux*           0640   radio      radio
+/dev/ppp                  0660   radio      vpn
 
 # sensors
 /sys/devices/i2c-12/12-*  pollrate_ms 0664 system system
@@ -174,10 +173,6 @@
 /sys/devices/virtual/input/input*                   poll           0660    input    system
 /sys/devices/virtual/input/input*                   pollrate_ms    0660    input    system
 
-# NFC
-/dev/bcm2079x             0600   nfc         nfc
-/dev/pn547                0660   nfc         nfc
-
 # wlan
 /dev/wcnss_wlan           0660   system     system
 /dev/wcnss_ctrl           0660   system     system
@@ -189,8 +184,6 @@
 /dev/uio0                 0660   system     system
 /dev/uio1                 0660   system     system
 /dev/uio2                 0660   system     system
-
-v/ppp                  0660   radio      vpn
 
 # for usb printer
 /dev/bus/usb/*         0660        system        usb
@@ -220,30 +213,6 @@ v/ppp                  0660   radio      vpn
 
 # sensorhub
 /dev/ssp_sensorhub        0660   system     system
-# Felica
-/dev/felica               0660    nfc   system
-/dev/felica_pon           0660    nfc   system
-/dev/felica_cen           0660    nfc   felicalock
-/dev/felica_rfs           0440    nfc   system
-/dev/felica_rws           0660    nfc   system
-/dev/felica_ant           0660    nfc   system
-/dev/felica_int_poll      0400    nfc   system
-/dev/felica_uid           0220    nfc   system
-/dev/felica_uicc          0660    nfc   system
-
-# NFC
-# JPN Felica Temporary Workaround
-/dev/ttyHSL2              0660    nfc       nfc
-/dev/snfc_uart            0660    nfc       nfc
-/dev/snfc_pon             0220    nfc       nfc
-/dev/snfc_cen             0440    nfc       system
-/dev/snfc_hsel            0660    nfc       nfc
-/dev/snfc_intu_poll       0440    nfc       nfc
-/dev/snfc_available_poll  0440    nfc       nfc
-/dev/snfc_rfs             0440    nfc       nfc
-/dev/snfc_rfs_poll        0440    nfc       nfc
-/dev/uartcc               0660    nfc       nfc
-
 /dev/iio:device*		  0660	 system	system
 /sys/devices/f9967000.spi/spi_master/spi32766/spi32766.0/iio:device*   buffer/enable 0660	  system	system
 /sys/devices/f9967000.spi/spi_master/spi32766/spi32766.0/iio:device*   buffer/length 0660	  system	system
@@ -389,5 +358,9 @@ v/ppp                  0660   radio      vpn
 /sys/devices/f9968000.i2c/i2c-12/12-0068/iio:device* pedometer_int_thresh				0660   system     radio
 /sys/devices/f9968000.i2c/i2c-12/12-0068/iio:device* pedometer_step_thresh				0660   system     radio
 
+
 # Reactivation Lock
 /dev/block/mmcblk0rpmb	0660	system	system
+
+# Google FRP solution
+/dev/block/platform/msm_sdcc.1/by-name/persistent    0660    system    system
