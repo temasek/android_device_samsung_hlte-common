@@ -33,7 +33,9 @@ on early-init
 
     export LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
 
-    write /sys/block/mmcblk0/queue/read_ahead_kb 512
+    # efs 
+    chmod 0660 /dev/block/mmcblk0p11
+    chown system system /dev/block/mmcblk0p11
 
 on init
     # Set permissions for persist partition
@@ -98,6 +100,13 @@ on boot
     mkdir /dev/socket/qmux_gps 0770 gps gps
     chmod 2770 /dev/socket/qmux_gps
 
+    #Create PERFD deamon related dirs
+    mkdir /data/misc/perfd 0755 root system
+    chmod 2755 /data/misc/perfd
+    mkdir /data/system/perfd 0770 root system
+    chmod 2770 /data/system/perfd
+    mkdir /persist/drm 0770 system system
+
     #Remove SUID bit for iproute2 ip tool
     chmod 0755 /system/bin/ip
 
@@ -148,6 +157,8 @@ on boot
 
 # msm specific files that need to be created on /data
 on post-fs-data
+    # Create directory for TZ Apps
+    mkdir /data/misc/qsee 0770 system system
 
     mkdir /data/misc/bluetooth 0770 bluetooth bluetooth
 
@@ -178,10 +189,31 @@ on post-fs-data
     chmod 0660 /efs/wifi/.mac.info
     restorecon /efs/wifi/.mac.info
 
+    # for WIFI Version
+    write /data/.wifiver.info 0
+    chown system root /data/.wifiver.info
+    chmod 0666 /data/.wifiver.info
+
+    # Create the directories used by CnE subsystem
+    mkdir /data/connectivity 0771 system system
+    chown system system /data/connectivity
+
+    # Create the directories used by DPM subsystem
+    mkdir /data/dpm 0771 system system
+    chown system system /data/dpm
+
+    mkdir /data/dpm/nsrm 0771 system system
+    hown system system /data/dpm/nsrm
 
     # Create directory used by audio subsystem
     mkdir /data/misc/audio 0770 audio audio
     restorecon_recursive /data/misc/audio
+
+    # Create directory used by the DASH client
+    mkdir /data/misc/dash 0770 media audio
+
+    # Create directory used by display clients
+    mkdir /data/misc/display 0770 root system
 
     # Mounting of persist is moved to 'on emmc-fs' and 'on fs' sections
     # We chown/chmod /persist again so because mount is run as root + defaults
@@ -204,6 +236,10 @@ on post-fs-data
     chown root system  /sys/class/sec/sec_touchkey/max_brightness
     chmod 0664  /sys/class/sec/sec_touchkey/max_brightness
 
+# Touchscreen
+    chmod 0660 /sys/class/input/input4/enabled
+    chown system system /sys/class/input/input4/enabled
+
     chmod 0660 /sys/class/leds/torch-sec1/brightness
     chown system camera /sys/class/leds/torch-sec1/brightness
 
@@ -212,6 +248,8 @@ on post-fs-data
     restorecon /sys/class/sec/sec_touchkey/keypad_enable
 
 # permission for Input Device(Touchkey).
+    chmod 0660 /sys/class/input/input1/enabled
+    chown system system /sys/class/input/input1/enabled
     chmod 0660 /sys/class/input/input2/enabled
     chown system system /sys/class/input/input2/enabled
     chown radio system /sys/class/sec/sec_touchkey/touch_sensitivity
@@ -221,9 +259,8 @@ on post-fs-data
     chown system radio /sys/class/sec/sec_touchkey/boost_level
 
 # permission for Input Device(Wacom).
-    chmod 0660 /sys/class/input/input4/enabled
-    chown system system /sys/class/input/input4/enabled
-    chown system system /sys/class/input/input18/enabled
+    chmod 0664 /sys/class/input/input16/enabled
+    chown system input /sys/class/input/input16/enabled
 
 # permissions for S-Pen
     chmod 0660 /sys/class/input/input3/enabled
@@ -257,14 +294,6 @@ on post-fs-data
     chown bluetooth net_bt_stack /proc/bluetooth/sleep/btwrite
     chmod 0600 /dev/btlock
     chown bluetooth bluetooth /dev/btlock
-
-    # Power Hal Permissions
-    chown system system /sys/class/input/input2/enabled
-    chown system system /sys/class/input/input3/enabled
-    chown system system /sys/class/input/input18/enabled
-    chmod 0660 /sys/class/input/input2/enabled
-    chmod 0660 /sys/class/input/input3/enabled
-    chmod 0660 /sys/class/input/input18/enabled
 
     # Vibrator
     chmod 0644 /sys/class/timed_output/vibrator/pwm_value
@@ -318,12 +347,18 @@ on post-fs-data
     setprop vold.post_fs_data_done 1
 
 # Broadcom NFC
+    chmod 0600 /dev/bcm2079x
+    chown nfc nfc /dev/bcm2079x
     mkdir /data/bcmnfc
     mkdir /data/bcmnfc/param
     chmod 0700 /data/bcmnfc
     chmod 0700 /data/bcmnfc/param
     chown nfc nfc /data/bcmnfc
     chown nfc nfc /data/bcmnfc/param
+
+# NFC NXP
+    chmod 0660 /dev/pn547
+    chown nfc nfc /dev/pn547
 
 # GPIO DVS
     chown radio system /sys/class/secgpio_check/secgpio_check_all/secgpio_ctrl
@@ -348,7 +383,6 @@ service irsc_util /system/bin/irsc_util "/etc/sec_config"
 service rmt_storage /system/bin/rmt_storage
     class core
     user root
-    group system
     disabled
 
 on property:ro.boot.emmc=true
@@ -538,7 +572,8 @@ on property:sys.boot_completed=1
     write /sys/module/msm_thermal/core_control/enabled 0
 
     write /sys/module/cpu_boost/parameters/boost_ms 20
-    write /sys/module/cpu_boost/parameters/input_boost_freq 1190400
+    write /sys/module/cpu_boost/parameters/sync_threshold 1728000
+    write /sys/module/cpu_boost/parameters/input_boost_freq 1497600
     write /sys/module/cpu_boost/parameters/input_boost_ms 40
     chown system system /sys/module/cpu_boost/parameters/input_boost_ms
     chmod 664 /sys/module/cpu_boost/parameters/input_boost_ms
