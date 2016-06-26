@@ -571,6 +571,9 @@ on property:sys.boot_completed=1
 
     write /sys/module/msm_thermal/core_control/enabled 0
 
+    # sched
+    write /dev/cpuctl/cpu.notify_on_migrate 1
+
     # cpu-boost
     write /sys/module/cpu_boost/parameters/boost_ms 20
     write /sys/module/cpu_boost/parameters/input_boost_freq 1190400
