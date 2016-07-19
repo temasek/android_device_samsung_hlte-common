@@ -1,4 +1,4 @@
-# Copyright (C) 2014 The CyanogenMod Project
+# Copyright (C) 2016 The CyanogenMod Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ TARGET_USE_COMPAT_GRALLOC_ALIGN := true
 USE_DEVICE_SPECIFIC_CAMERA := true
 
 # CMHW
-BOARD_HARDWARE_CLASS += device/samsung/hlte-common/cmhw
-BOARD_HARDWARE_CLASS += hardware/samsung/cmhw
+BOARD_HARDWARE_CLASS += $(LOCAL_PATH)/cmhw
 
 # RIL
 BOARD_RIL_CLASS := ../../../device/samsung/hlte-common/ril
