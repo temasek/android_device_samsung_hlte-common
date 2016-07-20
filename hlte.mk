@@ -131,10 +131,9 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/libnfc-brcm-20791b04.conf:system/etc/libnfc-brcm-20791b04.conf \
     $(LOCAL_PATH)/configs/libnfc-brcm.conf:system/etc/libnfc-brcm.conf
 
-# Pre-built vendor/libs
+# Pre-built Power HAL
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/pre-built/vendor/lib/hw/power.msm8974.so:/system/vendor/lib/hw/power.msm8974.so \
-    $(LOCAL_PATH)/pre-built/vendor/lib/hw/flp.default.so:/system/vendor/lib/hw/flp.default.so
+    $(LOCAL_PATH)/pre-built/vendor/lib/hw/power.msm8974.so:/system/vendor/lib/hw/power.msm8974.so
 
 # Kryten2k35 OTAUpdates
 PRODUCT_PACKAGES += \
