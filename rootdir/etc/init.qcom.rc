@@ -37,6 +37,98 @@ on early-init
     chmod 0660 /dev/block/mmcblk0p11
     chown system system /dev/block/mmcblk0p11
 
+    # Configure the hardware properly
+    write /sys/module/lpm_levels/enable_low_power/l2 4
+    write /sys/module/msm_pm/modes/cpu0/power_collapse/suspend_enabled 1
+    write /sys/module/msm_pm/modes/cpu1/power_collapse/suspend_enabled 1
+    write /sys/module/msm_pm/modes/cpu2/power_collapse/suspend_enabled 1
+    write /sys/module/msm_pm/modes/cpu3/power_collapse/suspend_enabled 1
+    write /sys/module/msm_pm/modes/cpu0/power_collapse/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu1/power_collapse/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu2/power_collapse/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu3/power_collapse/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu0/standalone_power_collapse/suspend_enabled 1
+    write /sys/module/msm_pm/modes/cpu1/standalone_power_collapse/suspend_enabled 1
+    write /sys/module/msm_pm/modes/cpu2/standalone_power_collapse/suspend_enabled 1
+    write /sys/module/msm_pm/modes/cpu3/standalone_power_collapse/suspend_enabled 1
+    write /sys/module/msm_pm/modes/cpu0/standalone_power_collapse/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu1/standalone_power_collapse/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu2/standalone_power_collapse/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu3/standalone_power_collapse/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu0/retention/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu1/retention/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu2/retention/idle_enabled 1
+    write /sys/module/msm_pm/modes/cpu3/retention/idle_enabled 1
+
+    write /sys/module/msm_thermal/core_control/enabled 0
+
+    write /sys/devices/system/cpu/cpu1/online 1
+    write /sys/devices/system/cpu/cpu2/online 1
+    write /sys/devices/system/cpu/cpu3/online 1
+
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor "interactive"
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "interactive"
+    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor "interactive"
+    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay "80000 268800:80000 300000:80000 422400:80000 652800:80000 729600:80000 883200:80000 960000:80000 1036800:80000 1190400:80000 1267200:80000 1497600:80000 1574400:80000 1728000:80000 1958400:80000 2265600:80000 2496000:80000"
+    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 110
+    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 960000
+    write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
+    write /sys/devices/system/cpu/cpufreq/interactive/target_loads "100 300000:36 422400:45 652800:53 729600:60 883200:66 960000:71 1036800:77 1190400:82 1267200:86 1497600:90 1574400:93 1728000:96 1958400:98 2265600:99 2496000:100"
+    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 39000
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 60000
+    write /sys/devices/system/cpu/cpufreq/interactive/max_freq_hysteresis 0
+    write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 30000
+    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 960000
+    write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
+
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 300000
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 300000
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 300000
+    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq 300000
+    chown root system /sys/devices/system/cpu/cpu1/online
+    chown root system /sys/devices/system/cpu/cpu2/online
+    chown root system /sys/devices/system/cpu/cpu3/online
+    chmod 664 /sys/devices/system/cpu/cpu1/online
+    chmod 664 /sys/devices/system/cpu/cpu2/online
+    chmod 664 /sys/devices/system/cpu/cpu3/online
+
+    write /sys/module/msm_thermal/core_control/enabled 0
+
+    # sched
+    write /dev/cpuctl/cpu.notify_on_migrate 1
+
+    # cpu-boost
+    write /sys/module/cpu_boost/parameters/boost_ms 0
+    write /sys/module/cpu_boost/parameters/input_boost_ms 0
+    write /sys/module/cpu_boost/parameters/sync_threshold 0
+    write /sys/module/cpu_boost/parameters/input_boost_freq 0
+
+    write /sys/module/cpu_boost/parameters/load_based_syncs 1
+    write /sys/module/cpu_boost/parameters/migration_load_threshold 20
+    chown system system /sys/module/cpu_boost/parameters/input_boost_ms
+    chmod 664 /sys/module/cpu_boost/parameters/input_boost_ms
+
+    write /sys/class/devfreq/qcom,cpubw.34/governor "msm_cpufreq"
+    write /sys/class/kgsl/kgsl-3d0/devfreq/governor msm-adreno-tz
+
+    #Simple GPU Algorithm
+    write /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate 1
+    write /sys/module/simple_gpu_algorithm/parameters/simple_ramp_threshold 4000
+    write /sys/module/simple_gpu_algorithm/parameters/simple_laziness 6 
+
+    #Core Saving
+    write /sys/devices/system/cpu/sched_mc_power_savings 2
+
+    #Intelliplug
+    write /sys/module/intelli_plug/parameters/cpu_nr_run_threshold 853  
+    write /sys/module/intelli_plug/parameters/intelli_plug_active 1      
+    write /sys/module/intelli_plug/parameters/nr_run_hysteresis 7                         
+    write /sys/module/intelli_plug/parameters/nr_run_profile_sel 0                          
+    write /sys/module/intelli_plug/parameters/touch_boost_active 0    
+    #write /sys/module/intelli_plug/parameters/screen_off_max
+    #write /sys/module/intelli_plug/parameters/nr_possible_cores
+
 on init
     # Set permissions for persist partition
     mkdir /persist 0771 system system
@@ -538,97 +630,12 @@ service wifi-crda /system/bin/sh /system/etc/init.crda.sh
 on property:sys.boot_completed=1
     write /sys/block/mmcblk0/queue/scheduler row
 
-    # Configure the hardware properly
-    write /sys/module/lpm_levels/enable_low_power/l2 4
-    write /sys/module/msm_pm/modes/cpu0/power_collapse/suspend_enabled 1
-    write /sys/module/msm_pm/modes/cpu1/power_collapse/suspend_enabled 1
-    write /sys/module/msm_pm/modes/cpu2/power_collapse/suspend_enabled 1
-    write /sys/module/msm_pm/modes/cpu3/power_collapse/suspend_enabled 1
-    write /sys/module/msm_pm/modes/cpu0/power_collapse/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu1/power_collapse/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu2/power_collapse/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu3/power_collapse/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu0/standalone_power_collapse/suspend_enabled 1
-    write /sys/module/msm_pm/modes/cpu1/standalone_power_collapse/suspend_enabled 1
-    write /sys/module/msm_pm/modes/cpu2/standalone_power_collapse/suspend_enabled 1
-    write /sys/module/msm_pm/modes/cpu3/standalone_power_collapse/suspend_enabled 1
-    write /sys/module/msm_pm/modes/cpu0/standalone_power_collapse/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu1/standalone_power_collapse/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu2/standalone_power_collapse/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu3/standalone_power_collapse/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu0/retention/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu1/retention/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu2/retention/idle_enabled 1
-    write /sys/module/msm_pm/modes/cpu3/retention/idle_enabled 1
 
-    write /sys/module/msm_thermal/core_control/enabled 0
 
-    write /sys/devices/system/cpu/cpu1/online 1
-    write /sys/devices/system/cpu/cpu2/online 1
-    write /sys/devices/system/cpu/cpu3/online 1
 
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "interactive"
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor "interactive"
-    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor "interactive"
-    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor "interactive"
-    write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay "80000 268800:80000 300000:80000 422400:80000 652800:80000 729600:80000 883200:80000 960000:80000 1036800:80000 1190400:80000 1267200:80000 1497600:80000 1574400:80000 1728000:80000 1958400:80000 2265600:80000 2496000:80000"
-    write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 110
-    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 960000
-    write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
-    write /sys/devices/system/cpu/cpufreq/interactive/target_loads "100 300000:36 422400:45 652800:53 729600:60 883200:66 960000:71 1036800:77 1190400:82 1267200:86 1497600:90 1574400:93 1728000:96 1958400:98 2265600:99 2496000:100"
-    write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 39000
-    write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 60000
-    write /sys/devices/system/cpu/cpufreq/interactive/max_freq_hysteresis 0
-    write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 30000
-    write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 960000
-    write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
 
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 300000
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 300000
-    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 300000
-    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq 300000
-    chown root system /sys/devices/system/cpu/cpu1/online
-    chown root system /sys/devices/system/cpu/cpu2/online
-    chown root system /sys/devices/system/cpu/cpu3/online
-    chmod 664 /sys/devices/system/cpu/cpu1/online
-    chmod 664 /sys/devices/system/cpu/cpu2/online
-    chmod 664 /sys/devices/system/cpu/cpu3/online
 
-    write /sys/module/msm_thermal/core_control/enabled 0
 
-    # sched
-    write /dev/cpuctl/cpu.notify_on_migrate 1
-
-    # cpu-boost
-    write /sys/module/cpu_boost/parameters/boost_ms 0
-    write /sys/module/cpu_boost/parameters/input_boost_ms 0
-    write /sys/module/cpu_boost/parameters/sync_threshold 0
-    write /sys/module/cpu_boost/parameters/input_boost_freq 0
-
-    write /sys/module/cpu_boost/parameters/load_based_syncs 1
-    write /sys/module/cpu_boost/parameters/migration_load_threshold 20
-    chown system system /sys/module/cpu_boost/parameters/input_boost_ms
-    chmod 664 /sys/module/cpu_boost/parameters/input_boost_ms
-
-    write /sys/class/devfreq/qcom,cpubw.34/governor "msm_cpufreq"
-    write /sys/class/kgsl/kgsl-3d0/devfreq/governor msm-adreno-tz
-
-    #Simple GPU Algorithm
-    write /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate 1
-    write /sys/module/simple_gpu_algorithm/parameters/simple_ramp_threshold 4000
-    write /sys/module/simple_gpu_algorithm/parameters/simple_laziness 6 
-
-    #Core Saving
-    write /sys/devices/system/cpu/sched_mc_power_savings 2
-
-    #Intelliplug
-    write /sys/module/intelli_plug/parameters/cpu_nr_run_threshold 853  
-    write /sys/module/intelli_plug/parameters/intelli_plug_active 1      
-    write /sys/module/intelli_plug/parameters/nr_run_hysteresis 7                         
-    write /sys/module/intelli_plug/parameters/nr_run_profile_sel 0                          
-    write /sys/module/intelli_plug/parameters/touch_boost_active 0    
-    #write /sys/module/intelli_plug/parameters/screen_off_max
-    #write /sys/module/intelli_plug/parameters/nr_possible_cores
 
 # Post boot services
     start mpdecision
