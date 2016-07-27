@@ -37,6 +37,46 @@ on early-init
     chmod 0660 /dev/block/mmcblk0p11
     chown system system /dev/block/mmcblk0p11
 
+    #Quad Core
+    chown root system /sys/devices/system/cpu/cpu1/online
+    chown root system /sys/devices/system/cpu/cpu2/online
+    chown root system /sys/devices/system/cpu/cpu3/online
+    chmod 664 /sys/devices/system/cpu/cpu1/online
+    chmod 664 /sys/devices/system/cpu/cpu2/online
+    chmod 664 /sys/devices/system/cpu/cpu3/online
+    #Kernel Freq Core 1 
+    chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+    chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 300000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2265600
+    chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+    #Kernel Freq Core 2 
+    chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor interactive
+    chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 300000
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq 2265600
+    chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+    chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
+    #Kernel Freq Core 3 
+    chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor interactive
+    chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 300000
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 2265600
+    chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
+    chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq
+    #Kernel Freq Core 4  
+    chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor interactive
+    chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq 300000
+    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq 2265600
+    chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq
+    chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq
+
     # Configure the hardware properly
     write /sys/module/lpm_levels/enable_low_power/l2 4
     write /sys/module/msm_pm/modes/cpu0/power_collapse/suspend_enabled 1
@@ -81,17 +121,6 @@ on early-init
     write /sys/devices/system/cpu/cpufreq/interactive/timer_slack 30000
     write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 960000
     write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
-
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 300000
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 300000
-    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 300000
-    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq 300000
-    chown root system /sys/devices/system/cpu/cpu1/online
-    chown root system /sys/devices/system/cpu/cpu2/online
-    chown root system /sys/devices/system/cpu/cpu3/online
-    chmod 664 /sys/devices/system/cpu/cpu1/online
-    chmod 664 /sys/devices/system/cpu/cpu2/online
-    chmod 664 /sys/devices/system/cpu/cpu3/online
 
     write /sys/module/msm_thermal/core_control/enabled 0
 
