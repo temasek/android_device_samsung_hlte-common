@@ -65,10 +65,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Radio
 PRODUCT_PROPERTY_OVERRIDES += \
-    persist.radio.add_power_save=1 \
-    persist.radio.snapshot_disabled=1 \
-    persist.radio.use_se_table_only=1 \
-    persist.radio.fill_eons=1 \
     ro.ril.telephony.mqanelements=6 \
     ro.telephony.ril_class=hlteRIL \
     persist.data.qmi.adb_logmask=0
