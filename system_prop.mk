@@ -56,7 +56,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.sensors=1
 
 # Tethering
-+PRODUCT_PROPERTY_OVERRIDES += \
+PRODUCT_PROPERTY_OVERRIDES += \
     net.tethering.noprovisioning=true
 
 # Wifi
