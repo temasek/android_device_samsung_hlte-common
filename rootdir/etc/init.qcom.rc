@@ -180,7 +180,7 @@ on early-init
     write /sys/module/intelli_plug/parameters/intelli_plug_active 1      
     write /sys/module/intelli_plug/parameters/nr_run_hysteresis 7                         
     write /sys/module/intelli_plug/parameters/nr_run_profile_sel 0                          
-    write /sys/module/intelli_plug/parameters/touch_boost_active 0    
+    write /sys/module/intelli_plug/parameters/touch_boost_active 1    
     #write /sys/module/intelli_plug/parameters/screen_off_max
     #write /sys/module/intelli_plug/parameters/nr_possible_cores
 
