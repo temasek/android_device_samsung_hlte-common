@@ -172,9 +172,6 @@ on early-init
     write /sys/module/simple_gpu_algorithm/parameters/simple_ramp_threshold 4000
     write /sys/module/simple_gpu_algorithm/parameters/simple_laziness 6 
 
-    #Core Saving
-    write /sys/devices/system/cpu/sched_mc_power_savings 2
-
     #Intelliplug
     write /sys/module/intelli_plug/parameters/cpu_nr_run_threshold 853  
     write /sys/module/intelli_plug/parameters/intelli_plug_active 1      
