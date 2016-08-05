@@ -1,4 +1,3 @@
-#!/system/bin/sh
 # By USBhost
 
 sleep 60; # give some time for boot

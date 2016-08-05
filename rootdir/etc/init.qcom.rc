@@ -181,6 +181,8 @@ on early-init
     #write /sys/module/intelli_plug/parameters/screen_off_max
     #write /sys/module/intelli_plug/parameters/nr_possible_cores
 
+    chmod 0755 /init.kgms.sh
+
 on init
     # Set permissions for persist partition
     mkdir /persist 0771 system system
@@ -708,7 +710,7 @@ on property:persist.sys.ssr.restart_level=3
     write /sys/bus/msm_subsys/devices/subsys2/restart_level related
     write /sys/bus/msm_subsys/devices/subsys3/restart_level related
 
-service KGMS /system/bin/sh /GMS.sh
+service kgms /system/bin/sh /init.kgms.sh
     class late_start
     user root
     group root
